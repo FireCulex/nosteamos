@@ -86,13 +86,11 @@ create_swap() {
 
 install_packages() {
 	arch-chroot /mnt bash -c '
-	sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
-	pacman -S reflector
-	reflector --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
 	pacman -S ttf-dejavu wireplumber pipewire-jack phonon-qt5-gstreamer --noconfirm
 	pacman -S xorg plasma plasma-wayland-session colord-kde --noconfirm
 	pacman -S firefox flatpak gamemode gamescope konsole --noconfirm
 	pacman -S git cpupower openvpn partitionmanager pavucontrol powertop xterm xxhash pipewire-pulse --noconfirm
+	sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
 	pacman -Sy steam vulkan-radeon lib32-vulkan-radeon --noconfirm
 '
 }

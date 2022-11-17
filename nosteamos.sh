@@ -70,7 +70,7 @@ generate_fstab() {
 
 	arch-chroot /mnt bash << EOCHROOT
 	pacman -S grub efibootmgr sudo breeze-grub --noconfirm
-	echo GRUB_THEME=\"/usr/share/grub/themes/breeze/theme.txt\"
+	echo GRUB_THEME=\"/usr/share/grub/themes/breeze/theme.txt\" >> /etc/default/grub 
 	grub-install --target=x86_64-efi --bootloader-id=${bootloaderid} --efi-directory=/boot/efi
 	grub-mkconfig -o /boot/grub/grub.cfg
 EOCHROOT

@@ -25,7 +25,7 @@ format_partitions() {
 
 prepare_base() {
 	mount ${dev}2 /mnt
-	pacstrap /mnt base linux linux-firmware vim nano
+	pacstrap /mnt base base-devel linux linux-firmware vim nano
 }
 create_offload() {
 	mount ${dev}4 /mnt/home
@@ -87,7 +87,6 @@ install_packages() {
 	pacman -S ttf-dejavu wireplumber pipewire-jack phonon-qt5-gstreamer --noconfirm
 	pacman -S xorg plasma plasma-wayland-session colord-kde --noconfirm
 	pacman -S firefox flatpak gamemode gamescope konsole  --noconfirm
-	pacman -S base-devel --noconfirm
 
 	sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
 		

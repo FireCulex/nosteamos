@@ -1,7 +1,10 @@
 #!/bin/sh
 
+# Drive to install too. Everthing will be erased!
 dev=/dev/sda
-username=FireCulex
+
+# Must be lowercase
+username=culex
 password=1234
 bootloaderid=noSteamOS
 
@@ -84,6 +87,7 @@ install_packages() {
 	pacman -S ttf-dejavu wireplumber pipewire-jack phonon-qt5-gstreamer --noconfirm
 	pacman -S xorg plasma plasma-wayland-session colord-kde --noconfirm
 	pacman -S firefox flatpak gamemode gamescope konsole  --noconfirm
+	pacman -S base-devel --noconfirm
 
 	sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
 		
@@ -96,7 +100,7 @@ create_user() {
 	useradd -m ${username}
 	echo -e "${username}:${password}" | chpasswd
 	usermod -aG wheel,audio,video,storage ${username}
-	echo "%wheel ALL=(ALL:ALL) ALL%" >> /etc/sudoers
+	echo "%wheel ALL=(ALL:ALL) ALL" >> /etc/sudoers
 EOCHROOT
 }
 	

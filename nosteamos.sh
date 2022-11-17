@@ -68,7 +68,10 @@ generate_fstab() {
 	genfstab -U /mnt >> /mnt/etc/fstab
 
 	arch-chroot /mnt bash << EOCHROOT
-	pacman -S grub efibootmgr sudo --noconfirm
+	pacman -S grub efibootmgr sudo breeze-grub --noconfirm
+	echo GRUB_THEME=\"/usr/share/grub/themes/breeze/theme.txt\"
+
+
 	grub-install --target=x86_64-efi --bootloader-id=${bootloaderid} --efi-directory=/boot/efi
 	grub-mkconfig -o /boot/grub/grub.cfg
 EOCHROOT
@@ -86,11 +89,12 @@ install_packages() {
 	arch-chroot /mnt bash -c '
 	pacman -S ttf-dejavu wireplumber pipewire-jack phonon-qt5-gstreamer --noconfirm
 	pacman -S xorg plasma plasma-wayland-session colord-kde --noconfirm
-	pacman -S firefox flatpak gamemode gamescope konsole  --noconfirm
+	pacman -S firefox flatpak gamemode gamescope konsole --noconfirm
+	pacman -S git cpupower openvpn partitionmanager pavucontrol powertop xterm xxhash pipewire-pulse --noconfirm
 
 	sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
 		
-	pacman -Sy steam vulkan-radeon lib32-vulkan-radeon mangohud lib32-mangohud
+	pacman -Sy steam vulkan-radeon lib32-vulkan-radeon
 '
 }
 

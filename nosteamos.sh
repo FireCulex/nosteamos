@@ -25,6 +25,7 @@ format_partitions() {
 
 prepare_base() {
 	mount ${dev}2 /mnt
+	reflector --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
 	pacstrap /mnt base base-devel linux linux-firmware vim nano
 }
 create_offload() {
@@ -85,13 +86,12 @@ create_swap() {
 
 install_packages() {
 	arch-chroot /mnt bash -c '
+	sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
+	reflector --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
 	pacman -S ttf-dejavu wireplumber pipewire-jack phonon-qt5-gstreamer --noconfirm
 	pacman -S xorg plasma plasma-wayland-session colord-kde --noconfirm
 	pacman -S firefox flatpak gamemode gamescope konsole --noconfirm
 	pacman -S git cpupower openvpn partitionmanager pavucontrol powertop xterm xxhash pipewire-pulse --noconfirm
-
-	sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
-		
 	pacman -Sy steam vulkan-radeon lib32-vulkan-radeon --noconfirm
 '
 }

@@ -92,7 +92,7 @@ install_packages() {
 
 	sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
 		
-	pacman -Sy steam vulkan-radeon lib32-vulkan-radeon
+	pacman -Sy steam vulkan-radeon lib32-vulkan-radeon --noconfirm
 '
 }
 

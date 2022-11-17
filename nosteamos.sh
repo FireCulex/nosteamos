@@ -11,7 +11,7 @@ bootloaderid=noSteamOS
 create_partitions() {
 	sfdisk ${dev} << EOF
 	1M,32M,ef
-	,5120M,L
+	,6144M,L
 	,256M,L
 	,,L
 EOF
@@ -69,7 +69,7 @@ generate_fstab() {
 	genfstab -U /mnt >> /mnt/etc/fstab
 
 	arch-chroot /mnt bash << EOCHROOT
-	pacman -S grub efibootmgr sudo breeze-grub --noconfirm
+	pacman -S grub efibootmgr sudo breeze-grub amd-ucode --noconfirm
 	echo GRUB_THEME=\"/usr/share/grub/themes/breeze/theme.txt\" >> /etc/default/grub 
 	grub-install --target=x86_64-efi --bootloader-id=${bootloaderid} --efi-directory=/boot/efi
 	grub-mkconfig -o /boot/grub/grub.cfg
@@ -89,7 +89,7 @@ install_packages() {
 	pacman -S ttf-dejavu wireplumber pipewire-jack phonon-qt5-gstreamer --noconfirm
 	pacman -S xorg plasma plasma-wayland-session colord-kde --noconfirm
 	pacman -S firefox flatpak gamemode gamescope konsole --noconfirm
-	pacman -S git cpupower openvpn partitionmanager pavucontrol powertop xterm xxhash pipewire-pulse --noconfirm
+	pacman -S git cpupower openvpn partitionmanager pavucontrol powertop xterm xxhash pipewire-pulse ark avahi dolphin --noconfirm
 	sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
 	pacman -Sy steam vulkan-radeon lib32-vulkan-radeon --noconfirm
 '

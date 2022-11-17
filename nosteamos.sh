@@ -87,6 +87,7 @@ create_swap() {
 install_packages() {
 	arch-chroot /mnt bash -c '
 	sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
+	pacman -S reflector
 	reflector --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
 	pacman -S ttf-dejavu wireplumber pipewire-jack phonon-qt5-gstreamer --noconfirm
 	pacman -S xorg plasma plasma-wayland-session colord-kde --noconfirm

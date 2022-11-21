@@ -4,8 +4,8 @@
 dev=/dev/sda
 
 # Must be lowercase
-username=culex
-password=1234
+username=deck
+password=
 bootloaderid=noSteamOS
 
 wipe_partitions() {
@@ -115,11 +115,15 @@ EOCHROOT
 }
 	
 finalize() {
-	arch-chroot /mnt bash -c '
+	arch-chroot /mnt bash << EOF
 	systemctl enable sddm.service
 	systemctl enable NetworkManager.service
 	yes|pacman -Scc
-'
+	mkdir /etc/sddm.conf.d/
+	echo [Autologin] >> /etc/sddm.conf.d/autologin.conf
+    echo User=${username} >> /etc/sddm.conf.d/autologin.conf
+    echo Session=plasma >> /etc/sddm.conf.d/autologin.conf
+EOF
 }
 
 install_yay() {

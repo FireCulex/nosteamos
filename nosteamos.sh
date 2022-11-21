@@ -8,11 +8,12 @@ username=culex
 password=1234
 bootloaderid=noSteamOS
 
-wipe_partitions()
+wipe_partitions() {
 	wipefs ${dev}1 --all
 	wipefs ${dev}2 --all
 	wipefs ${dev}3 --all
 	wipefs ${dev}4 --all
+}
 
 create_partitions() {
 	sfdisk ${dev} << EOF
@@ -99,7 +100,6 @@ install_packages() {
 	sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
 	pacman -Sy steam vulkan-radeon lib32-vulkan-radeon --noconfirm
 	flatpak install flathub org.mozilla.firefox
-
 '
 }
 

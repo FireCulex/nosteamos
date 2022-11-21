@@ -118,6 +118,7 @@ finalize() {
 	arch-chroot /mnt bash -c '
 	systemctl enable sddm.service
 	systemctl enable NetworkManager.service
+	yes|pacman -Scc
 '
 }
 

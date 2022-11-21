@@ -33,7 +33,7 @@ format_partitions() {
 prepare_base() {
 	mount -o compress=zstd ${dev}2 /mnt
 	reflector --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
-	pacstrap /mnt base base-devel linux linux-firmware vim nano
+	pacstrap /mnt base base-devel linux linux-firmware vim nano git
 }
 create_offload() {
 	mount ${dev}4 /mnt/home
@@ -97,7 +97,7 @@ install_packages() {
 	pacman -S ttf-dejavu wireplumber pipewire-jack pipewire-pulse phonon-qt5-gstreamer --noconfirm
 	pacman -S xorg plasma plasma-wayland-session colord-kde --noconfirm
 	pacman -S flatpak gamemode gamescope konsole --noconfirm
-	pacman -S git cpupower openvpn partitionmanager pavucontrol powertop xterm xxhash ark avahi dolphin --noconfirm
+	pacman -S cpupower openvpn partitionmanager pavucontrol powertop xterm xxhash ark avahi dolphin --noconfirm
 	sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
 	pacman -Sy steam vulkan-radeon lib32-vulkan-radeon --noconfirm
 	flatpak install flathub org.mozilla.firefox -y --noninteractive

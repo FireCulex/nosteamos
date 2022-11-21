@@ -124,6 +124,14 @@ finalize() {
 	echo [Autologin] >> /etc/sddm.conf.d/autologin.conf
     echo User=${username} >> /etc/sddm.conf.d/autologin.conf
     echo Session=plasma >> /etc/sddm.conf.d/autologin.conf
+	cd /home/${username}/.config/kdedefaults
+	curl https://raw.githubusercontent.com/FireCulex/nosteamos/main/kdeglobals.patch -o kdeglobals.patch
+	patch -i kdeglobals.patch
+	rm kdeglobals.patch
+	cd /home/${username}/.config
+	curl https://raw.githubusercontent.com/FireCulex/nosteamos/main/plasma-org.kde.plasma.desktop-appletsrc.patch -o plasma-org.kde.plasma.desktop-appletsrc.patch
+	patch -i plasma-org.kde.plasma.desktop-appletsrc.patch
+	rm plasma-org.kde.plasma.desktop-appletsrc.patch
 EOF
 }
 

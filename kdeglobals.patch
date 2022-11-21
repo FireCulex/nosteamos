@@ -1,0 +1,13 @@
+--- a/kdeglobals	2022-11-21 15:33:28.793313912 +0000
++++ b/kdeglobals	2022-11-21 15:29:09.209448700 +0000
+@@ -1,8 +1,8 @@
+ [General]
+-ColorScheme=BreezeLight
++ColorScheme=BreezeDark
+ 
+ [Icons]
+-Theme=breeze
++Theme=breeze-dark
+ 
+ [KDE]
+ widgetStyle=Breeze

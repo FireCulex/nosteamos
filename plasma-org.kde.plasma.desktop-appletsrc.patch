@@ -1,0 +1,17 @@
+--- a/plasma-org.kde.plasma.desktop-appletsrc	2022-11-21 15:33:44.879980247 +0000
++++ b/plasma-org.kde.plasma.desktop-appletsrc	2022-11-21 15:31:17.454319100 +0000
+@@ -16,6 +16,14 @@
+ plugin=org.kde.plasma.folder
+ wallpaperplugin=org.kde.image
+ 
++[Containments][1][ConfigDialog]
++DialogHeight=540
++DialogWidth=720
++
++[Containments][1][Wallpaper][org.kde.image][General]
++Image=/usr/share/wallpapers/MilkyWay/
++SlidePaths=/usr/share/wallpapers/
++
+ [Containments][2]
+ activityId=
+ formfactor=2

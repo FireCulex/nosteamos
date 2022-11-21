@@ -99,7 +99,7 @@ install_packages() {
 	pacman -S git cpupower openvpn partitionmanager pavucontrol powertop xterm xxhash pipewire-pulse ark avahi dolphin --noconfirm
 	sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
 	pacman -Sy steam vulkan-radeon lib32-vulkan-radeon --noconfirm
-	flatpak install flathub org.mozilla.firefox
+	flatpak install flathub org.mozilla.firefox -y --noninteractive
 '
 }
 

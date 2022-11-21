@@ -108,7 +108,8 @@ install_packages() {
 create_user() {
 	arch-chroot /mnt bash  << EOCHROOT
 	useradd -m ${username}
-	echo -e "${username}:${password}" | chpasswd
+	passwd -d ${username}
+#	echo -e "${username}:${password}" | chpasswd
 	usermod -aG wheel,audio,video,storage ${username}
 	echo "%wheel ALL=(ALL:ALL) ALL" >> /etc/sudoers
 EOCHROOT

@@ -93,13 +93,14 @@ create_swap() {
 
 install_packages() {
 	arch-chroot /mnt bash -c '
-	pacman -S ttf-dejavu wireplumber pipewire-jack phonon-qt5-gstreamer --noconfirm
+	pacman -S ttf-dejavu wireplumber pipewire-jack pipewire-pulse phonon-qt5-gstreamer --noconfirm
 	pacman -S xorg plasma plasma-wayland-session colord-kde --noconfirm
 	pacman -S flatpak gamemode gamescope konsole --noconfirm
-	pacman -S git cpupower openvpn partitionmanager pavucontrol powertop xterm xxhash pipewire-pulse ark avahi dolphin --noconfirm
+	pacman -S git cpupower openvpn partitionmanager pavucontrol powertop xterm xxhash ark avahi dolphin --noconfirm
 	sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
 	pacman -Sy steam vulkan-radeon lib32-vulkan-radeon --noconfirm
 	flatpak install flathub org.mozilla.firefox -y --noninteractive
+	yay -S mangohud --noconfirm
 '
 }
 
@@ -119,6 +120,17 @@ finalize() {
 '
 }
 
+install_yay() {
+	arch-chroot /mnt bash << EOF
+	cd /opt
+	git clone https://aur.archlinux.org/yay-bin.git
+	chmod 777 yay-bin
+	cd yay-bin
+	su ${username} bash -c 'makepkg -si'
+	pacman -U yay*.zst --noconfirm
+EOF
+}
+
 wipe_partitions
 create_partitions
 format_partitions
@@ -126,6 +138,7 @@ prepare_base
 create_offload
 generate_fstab
 create_swap
-install_packages
 create_user
+install_yay
+install_packages
 finalize

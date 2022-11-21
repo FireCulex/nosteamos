@@ -1,5 +1,5 @@
 # nosteamos
-Arch auto install based on SteamOS partition layout and packages
+Arch auto install based on SteamOS partition layout and packages  Use at your own risk. 
 
 https://www.youtube.com/watch?v=10K0hD1OGKs
 # ToDo

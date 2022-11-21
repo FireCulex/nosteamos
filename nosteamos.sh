@@ -8,10 +8,16 @@ username=culex
 password=1234
 bootloaderid=noSteamOS
 
+wipe_partitions()
+	wipefs ${dev}1 --all
+	wipefs ${dev}2 --all
+	wipefs ${dev}3 --all
+	wipefs ${dev}4 --all
+
 create_partitions() {
 	sfdisk ${dev} << EOF
 	1M,32M,ef
-	,6144M,L
+	,5120M,L
 	,256M,L
 	,,L
 EOF
@@ -24,7 +30,7 @@ format_partitions() {
 }
 
 prepare_base() {
-	mount ${dev}2 /mnt
+	mount -o compress=zstd ${dev}2 /mnt
 	reflector --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
 	pacstrap /mnt base base-devel linux linux-firmware vim nano
 }
@@ -88,10 +94,12 @@ install_packages() {
 	arch-chroot /mnt bash -c '
 	pacman -S ttf-dejavu wireplumber pipewire-jack phonon-qt5-gstreamer --noconfirm
 	pacman -S xorg plasma plasma-wayland-session colord-kde --noconfirm
-	pacman -S firefox flatpak gamemode gamescope konsole --noconfirm
+	pacman -S flatpak gamemode gamescope konsole --noconfirm
 	pacman -S git cpupower openvpn partitionmanager pavucontrol powertop xterm xxhash pipewire-pulse ark avahi dolphin --noconfirm
 	sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
 	pacman -Sy steam vulkan-radeon lib32-vulkan-radeon --noconfirm
+	flatpak install flathub org.mozilla.firefox
+
 '
 }
 
@@ -111,6 +119,7 @@ finalize() {
 '
 }
 
+wipe_partitions
 create_partitions
 format_partitions
 prepare_base

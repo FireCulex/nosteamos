@@ -59,6 +59,7 @@ create_offload() {
 	ln -fs /home/.steamos/offload/var/log /mnt/var/log
 
 	mkdir  /mnt/home/.steamos/offload/var/tmp 
+	chmod 1777 /mnt/home/.steamos/offload/var/tmp
 	rm -rf /mnt/var/tmp
 	ln -fs /home/.steamos/offload/var/tmp /mnt/var/tmp
 

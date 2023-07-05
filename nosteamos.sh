@@ -11,6 +11,9 @@ username="deck"
 password=""
 bootloaderid="noSteamOS"
 
+# Rebuild the rootfs and var only incase of corruption or upgrade
+recreate_root_only="n"
+
 display_warning() {
  echo "WARNING: ALL DATA ON DISK $dev[1-4] WILL BE ERASED"
  
@@ -45,17 +48,24 @@ EOF
 
 # format the partitions
 format_partitions() {
-  mkfs.fat "${dev}1"
-  mkfs.btrfs "${dev}2"
-  mkfs.ext4 "${dev}3"
-  mkfs.ext4 "${dev}4"
+  if [[ "$recreate_root_only" == "n" ]]; then
+    mkfs.fat "${dev}1"
+    mkfs.btrfs "${dev}2"
+    mkfs.ext4 "${dev}3"
+    mkfs.ext4 "${dev}4"
+  else
+    mkfs.btrfs -f "${dev}2"
+	mkfs.ext4 -f "${dev}3"
+  fi
 }
 
 # prepare the base system
 prepare_base() {
   mount -o compress=zstd "${dev}2" /mnt
   reflector --latest 5 -c US --save /etc/pacman.d/mirrorlist
-  pacstrap /mnt base base-devel linux linux-firmware vim nano git btrfs-progs
+  pacstrap /mnt base linux linux-firmware vim nano git btrfs-progs
+  mount -t proc /proc /mnt/proc/
+  
 }
 
 
@@ -63,8 +73,10 @@ create_offload() {
   mount "${dev}4" /mnt/home
 
   # Create offload directories
-  mkdir -p /mnt/home/.steamos/offload/var/{cache,pacman,lib/{docker,flatpak,systemd/coredump}}
-  mkdir -p /mnt/home/.steamos/offload/{opt,root,srv}
+  if [[ "$recreate_root_only" == "n" ]]; then
+    mkdir -p /mnt/home/.steamos/offload/var/{cache,pacman,lib/{docker,flatpak,systemd/coredump}}
+    mkdir -p /mnt/home/.steamos/offload/{opt,root,srv}
+  fi
   rm -rf /mnt/{opt,root,srv}
   
   # Create symbolic links to offload directories
@@ -73,10 +85,16 @@ create_offload() {
   ln -fs /home/.steamos/offload/srv /mnt/srv
 
   # Move and symlink system files to offload directories
-  mv /mnt/var/log /mnt/home/.steamos/offload/var
-  ln -fs /home/.steamos/offload/var/log /mnt/var/log
+    
+  if [[ "$recreate_root_only" == "n" ]]; then
+    mv /mnt/var/cache/pacman /mnt/home/.steamos/offload/var/cache/pacman
+	mv /mnt/var/log /mnt/home/.steamos/offload/var
+  else
+    rm -rf /mnt/var/cache/pacman
+	rm -rf /mnt/var/log
+  fi
   
-  mv /mnt/var/cache/pacman /mnt/home/.steamos/offload/var/cache/pacman
+  ln -fs /home/.steamos/offload/var/log /mnt/var/log
   ln -fs /home/.steamos/offload/var/cache/pacman /mnt/var/cache/pacman
   
   rm -rf /mnt/var/lib/systemd/coredump
@@ -84,17 +102,21 @@ create_offload() {
   ln -fs /home/.steamos/offload/var/lib/docker /mnt/var/lib/docker
   ln -fs /home/.steamos/offload/var/lib/flatpak /mnt/var/lib/flatpak
 
-  mkdir -m 1777 /mnt/home/.steamos/offload/var/tmp
+  if [[ "$recreate_root_only" == "n" ]]; then
+    mkdir -m 1777 /mnt/home/.steamos/offload/var/tmp
+  fi
+  
   rm -rf /mnt/var/tmp
   ln -fs /home/.steamos/offload/var/tmp /mnt/var/tmp
 
-  mount "${dev}3" /mnt/mnt
   
-  mv /mnt/var/* /mnt/mnt
-  rm -rf /mnt/var
-  mkdir /mnt/var
-  umount /mnt/mnt
-  mount "${dev}3" /mnt/var
+    mount "${dev}3" /mnt/mnt
+    mv /mnt/var/* /mnt/mnt
+	umount /mnt/mnt
+
+    rm -rf /mnt/var
+    mkdir /mnt/var
+    mount "${dev}3" /mnt/var
 }
 
 # Function to install GRUB bootloader
@@ -123,9 +145,11 @@ EOCHROOT
 
 # create a swap file
 create_swap() {
-  dd if=/dev/zero of=/mnt/home/swapfile bs=1G count=1
-  chmod 600 /mnt/home/swapfile
-  mkswap /mnt/home/swapfile
+  if [[ "$recreate_root_only" == "n" ]]; then
+    dd if=/dev/zero of=/mnt/home/swapfile bs=1G count=1
+    chmod 600 /mnt/home/swapfile
+    mkswap /mnt/home/swapfile
+  fi
 
   echo "/home/swapfile none swap defaults 0 0" >>/mnt/etc/fstab
 }
@@ -177,7 +201,7 @@ finalize() {
   sed -i 's/#IgnorePkg   =/IgnorePkg   = pacman/' /etc/pacman.conf
   sed -i 's/^DISTRIB_DESCRIPTION="Arch Linux"$/DISTRIB_DESCRIPTION="noSteamOS"/' /etc/lsb-release
   btrfs property set / ro true
-  EOF
+EOF
 }
 
 # install Yay AUR helper
@@ -244,8 +268,12 @@ steam_cmd() {
 }
 
 check_uefi
-wipe_partitions
-create_partitions
+
+if [[ "$recreate_root_only" == "n" ]]; then
+  wipe_partitions
+  create_partitions
+fi
+
 format_partitions
 prepare_base
 create_offload

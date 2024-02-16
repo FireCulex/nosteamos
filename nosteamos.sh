@@ -55,7 +55,7 @@ format_partitions() {
     mkfs.ext4 "${dev}4"
   else
     mkfs.btrfs -f "${dev}2"
-	mkfs.ext4 -f "${dev}3"
+    mkfs.ext4 "${dev}3"
   fi
 }
 
@@ -63,11 +63,13 @@ format_partitions() {
 prepare_base() {
   mount -o compress=zstd "${dev}2" /mnt
   reflector --latest 5 -c US --save /etc/pacman.d/mirrorlist
-  pacstrap /mnt base linux linux-firmware vim nano git btrfs-progs
+  pacman -Sy --noconfirm
+  pacman -S archlinux-keyring --noconfirm
+  pacstrap /mnt base linux linux-firmware vim nano git btrfs-progs bluez bluez-utils dos2unix iotop htop openssh diffutils boost-libs less iw iwd lm_sensors lsof mdadm networkmanager nfs-utils nftables ntfs-3g nvme-cli openvpn parted pciutils perf powertop protobuf-c python rsync smbclient sqlite squashfs-tools sshfs strace tcl udisks2 unzip wget vmaf x264 x265 zip zsh
+
   mount -t proc /proc /mnt/proc/
   
 }
-
 
 create_offload() {
   mount "${dev}4" /mnt/home
@@ -173,7 +175,7 @@ install_packages() {
   if [ "$(uname -m)" = "x86_64" ]; then
     arch-chroot /mnt bash <<EOF
     sed -i '/\[multilib\]/,/Include/ s/^#//' /etc/pacman.conf
-    pacman -Sy --noconfirm steam vulkan-radeon lib32-vulkan-radeon gamescope lib32-gamemode 
+    pacman -Sy --noconfirm steam vulkan-radeon lib32-vulkan-radeon gamescope lib32-gamemode lib32-libxinerama lib32-openal
 EOF
   fi
   
